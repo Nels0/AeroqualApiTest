@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 namespace ApiTest.Controllers
 {
-
 	[ApiController]
 	[Route("[controller]")]
 	public class PeopleController : ControllerBase
@@ -41,7 +40,6 @@ namespace ApiTest.Controllers
 		[HttpGet("{id}")]
 		public IActionResult GetPerson(int id)
 		{
-			// Implement logic to get a specific person by ID
 			var person = _DAL.GetPerson(id);
 			if (person == null)
 			{

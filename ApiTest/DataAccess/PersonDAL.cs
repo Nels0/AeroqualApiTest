@@ -43,7 +43,6 @@ namespace ApiTest.DataAccess
 					dataList = people.People;
 					lastIndex = dataList.Max(person => person.Id);
 				}
-
 			}
 			else
 			{
@@ -68,6 +67,7 @@ namespace ApiTest.DataAccess
 			ReadData();
 			return dataList.FirstOrDefault(person => person.Id == id);
 		}
+
 		public List<Person> GetPersonList()
 		{
 			ReadData();
@@ -91,7 +91,6 @@ namespace ApiTest.DataAccess
 
 		public bool UpdatePerson(int id, Person submittedPerson)
 		{
-			//todo: handle person doesn't exist
 			bool existingPerson;
 
 			ReadData();
@@ -119,7 +118,5 @@ namespace ApiTest.DataAccess
 			dataList.RemoveAll(Person => Person.Id == id);
 			WriteData();
 		}
-
-
 	}
 }
