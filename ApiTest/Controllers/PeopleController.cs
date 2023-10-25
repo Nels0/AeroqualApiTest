@@ -1,71 +1,79 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ApiTest.DataAccess;
+using ApiTest.Objects;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-[ApiController]
-[Route("[controller]")]
-public class PeopleController : ControllerBase
-
+namespace ApiTest.Controllers
 {
-    public PeopleController() //do dependency injection?
-    {
-        DAL = new PersonDAL();
-    }
 
-    public PersonDAL DAL { get; private set; }
+	[ApiController]
+	[Route("[controller]")]
+	public class PeopleController : ControllerBase
 
-
-	// GET: people?searchTerm
-	[HttpGet]
-	public IActionResult GetPeople([FromQuery] string searchTerm)
 	{
-		List<Person> peopleList;
-
-		if (searchTerm == null)
+		public PeopleController(IPersonDAL DAL) //do dependency injection?
 		{
-			peopleList = DAL.GetPersonList();
-		}else
-		{
-			peopleList = DAL.GetPeopleSearch(searchTerm);
-
+			_DAL = DAL;
 		}
-		return Ok(peopleList);
-	}
 
-	// GET: people/{id}
-	[HttpGet("{id}")]
-	public IActionResult GetPerson(int id)
-	{
-		// Implement logic to get a specific person by ID
-		var person = DAL.GetPerson(id);
-		if (person == null)
+		private IPersonDAL _DAL;
+
+
+		// GET: people?searchTerm
+		[HttpGet]
+		public IActionResult GetPeople([FromQuery] string searchTerm)
 		{
-			return NotFound(); // 404 Not Found
+			List<Person> peopleList;
+
+			if (searchTerm == null)
+			{
+				peopleList = _DAL.GetPersonList();
+			}
+			else
+			{
+				peopleList = _DAL.GetPeopleSearch(searchTerm);
+
+			}
+			return Ok(peopleList);
 		}
-		return Ok(person);
-	}
 
-	// POST: people
-	[HttpPost]
-	public IActionResult CreatePerson([FromBody] Person newPerson)
-	{
-		var person = DAL.CreatePerson(newPerson);
-		return CreatedAtAction("GetPerson", new { id = person.Id }, person);
-	}
+		// GET: people/{id}
+		[HttpGet("{id}")]
+		public IActionResult GetPerson(int id)
+		{
+			// Implement logic to get a specific person by ID
+			var person = _DAL.GetPerson(id);
+			if (person == null)
+			{
+				return NotFound(); // 404 Not Found
+			}
+			return Ok(person);
+		}
 
-	// PUT: people/{id}
-	[HttpPut("{id}")]
-	public IActionResult UpdatePerson(int id, [FromBody] Person updatedPerson)
-	{
-		//todo: handle put doing a creation
-		DAL.UpdatePerson(id, updatedPerson);
-		return NoContent(); // 204 No Content
-	}
+		// POST: people
+		[HttpPost]
+		public IActionResult CreatePerson([FromBody] Person newPerson)
+		{
+			var person = _DAL.CreatePerson(newPerson);
+			return CreatedAtAction("GetPerson", new { id = person.Id }, person);
+		}
 
-	// DELETE: people/{id}
-	[HttpDelete("{id}")]
-	public IActionResult DeletePerson(int id)
-	{
-		DAL.DeletePerson(id);
-		return NoContent();
+		// PUT: people/{id}
+		[HttpPut("{id}")]
+		public IActionResult UpdatePerson(int id, [FromBody] Person updatedPerson)
+		{
+			var existingPerson = _DAL.UpdatePerson(id, updatedPerson);
+
+			//returns 201 with location header if PUT creates new person, otherwise standard 204 response
+			return existingPerson ? NoContent() : CreatedAtAction("GetPerson", new { id = id }, new { id = id }); 
+		}
+
+		// DELETE: people/{id}
+		[HttpDelete("{id}")]
+		public IActionResult DeletePerson(int id)
+		{
+			_DAL.DeletePerson(id);
+			return NoContent();
+		}
 	}
 }

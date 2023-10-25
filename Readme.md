@@ -15,19 +15,38 @@ This test is to create a simple API that serves data from a JSON file. We would 
 
 ## Design decisions
 
-Auth: 
-	JWT, basic secure standard likely sufficient. Token management not implemented.
-DAL:
-	- Caching: not implemented, R/W done each time CRUD performed. Insufficient spec for caching/speed scope. Potential for simple caching using a 'lastwrite' check in the DAL
+### Auth: 
+	Auth not implemented - not specified. Would default to using JWT if required, assume in most prod cases auth is a separate build
+### DAL:
+	- DTO mapping uses default .net JSON mapping
+	- Caching: not implemented, R/W done each time CRUD performed. Insufficient spec for caching/speed scope. Potential for simple caching using a 'last write' check in the DAL
 	- Concurrency: filestream used, rely on OS.
 	- Deletion: Considering privacy obligations by default and data structure in json file, hard delete used. Requirements could specify a soft delete, or delayed/batch deletion.
-Error handling:
-	Very basic error handling included, scope not defined.
+### Responses/Errors:
+	404 thrown for GET by ID failing, as per RFC
+	empty list returned for no result search - no error to handle
+	PUT will create a resource if none exists, and inform client with 201 response
+	File access issues will cause catastrophic failure, throw 500 response. 
+### Layout: 
+	Single controller used, automatically registered by convention 
+	Separate Data Access Layer used by controller 
+	Basic namespaces/folder structure
+	Interface in same file as implementation: Easier dev experience when implementation is in the same project in my experience.
 
+### Expanded scope could include
+	Performance improvements i.e: caching
+	Closer look at concurrency, async, and file flags if multiple services running off one file
+	Using a database.
+	Implementing authorisation.
+	
+	
 
-x /people POST 
-x /people/{id} GET
-x /people/{id} DELETE
-x /people/{id} PUT 
-x /people?{searchTerm} GET 
-x /peopleGET
+Endpoints:
+
+/people POST : create person (JSON body object)
+/people/{id} GET : get person by id
+/people/{id} DELETE : delete person by id
+/people/{id} PUT : update person by id (JSON body object)
+/people?{searchTerm} GET : get list of people by substring match (case-insensitive)
+/people GET : get complete list of people
+
