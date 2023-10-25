@@ -43,10 +43,10 @@ This test is to create a simple API that serves data from a JSON file. We would 
 
 Endpoints:
 
-/people POST : create person (JSON body object)
-/people/{id} GET : get person by id
-/people/{id} DELETE : delete person by id
-/people/{id} PUT : update person by id (JSON body object)
-/people?{searchTerm} GET : get list of people by substring match (case-insensitive)
-/people GET : get complete list of people
+- /people POST : create person (JSON body object)
+- /people/{id} GET : get person by id
+- /people/{id} DELETE : delete person by id
+- /people/{id} PUT : update person by id (JSON body object)
+- /people?{searchTerm} GET : get list of people by substring match (case-insensitive)
+- /people GET : get complete list of people
 
